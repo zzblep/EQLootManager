@@ -181,8 +181,7 @@ namespace EQLootManager
                     while ((line = reader.ReadLine()) != null)
                     {
                         string lineClean = line.Substring(line.IndexOf(']') + 2);
-                        lineClean = lineClean.Replace(".dkp", "");
-                        lineClean = lineClean.Trim();
+                        lineClean = lineClean.Replace(".dkp", "").Replace("\"","").Trim();
                         Match match = regex.Match(lineClean);
                         if (match.Success)
                         {
