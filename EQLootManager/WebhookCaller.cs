@@ -38,7 +38,8 @@ namespace EQLootManager
             SendQueue.RemoveAt(0);
             var values = new Dictionary<string, string>
             {
-                { "content", Payload.Replace("\"", "\\\"") }
+                //{ "content", Payload.Replace("\"", "\\\"") }
+                { "content", Payload }
             };
 
             var content = new FormUrlEncodedContent(values);

@@ -186,7 +186,7 @@ namespace EQLootManager
                         if (match.Success)
                         {
                             string itemName = match.Groups[2].ToString().Trim();
-                            lineClean = lineClean.Replace(itemName, String.Format("\"{0}\"", itemName));
+                            lineClean = lineClean.Replace(itemName, String.Format(@"""" + "{0}" + @"""", itemName));
                             if (match.Groups[1].ToString() == "")
                             {
                                 lineClean = "startbids " + lineClean.TrimStart();
