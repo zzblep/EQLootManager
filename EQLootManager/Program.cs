@@ -159,7 +159,7 @@ namespace EQLootManager
                 File.Create(path).Dispose();
             }
             
-            Regex regex = new Regex(@"(startbids\s|startbid\s|startauction\s|cancel\s|)(?:2x\s?|)(?:(.*?)(\s\d+|$))", RegexOptions.IgnoreCase);
+            Regex regex = new Regex(@"(startbids\s|startbid\s|startauction\s|cancel\s|)(?:(?:\d+)?x?\s?|)(?:(.*?)(\s\d+|$))", RegexOptions.IgnoreCase);
             using (StreamReader reader = new StreamReader(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
             {
 
@@ -186,7 +186,21 @@ namespace EQLootManager
                         if (match.Success)
                         {
                             string itemName = match.Groups[2].ToString().Trim();
-                            lineClean = lineClean.Replace(itemName, String.Format(@"""" + "{0}" + @"""", itemName));
+                            Regex delimiters = new Regex(@"(!|,)");
+                            
+                            string[] multipleItems = delimiters.Split(itemName);
+                            if (multipleItems.Length > 0)
+                            {
+                                string multiItemCombined = "";
+                                foreach (var item in multipleItems)
+                                {
+                                    if (!delimiters.Match(item).Success)
+                                        multiItemCombined = String.Format(@"{0} ""{1}""", multiItemCombined, item.Trim());
+                                }
+                                lineClean = lineClean.Replace(itemName, multiItemCombined.Trim());
+                            }
+                            else
+                                lineClean = lineClean.Replace(itemName, String.Format(@"""" + "{0}" + @"""", itemName));
                             if (match.Groups[1].ToString() == "")
                             {
                                 lineClean = "startbids " + lineClean.TrimStart();
