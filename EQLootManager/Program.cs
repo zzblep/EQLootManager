@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -186,27 +187,50 @@ namespace EQLootManager
                         if (match.Success)
                         {
                             string itemName = match.Groups[2].ToString().Trim();
-                            Regex delimiters = new Regex(@"(!|,)");
+                            Regex delimiters = new Regex(@"(!|;)");
                             
                             string[] multipleItems = delimiters.Split(itemName);
                             if (multipleItems.Length > 0)
                             {
+                                
                                 string multiItemCombined = "";
                                 foreach (var item in multipleItems)
                                 {
-                                    if (!delimiters.Match(item).Success)
+                                    if (!delimiters.Match(item).Success && item != "")
+                                    {
                                         multiItemCombined = String.Format(@"{0} ""{1}""", multiItemCombined, item.Trim());
+
+
+
+                                        // REMOVE SECTION BELOW AFTER MULTIITEM IS IMPLEMENTED IN DISCIPLE BOT, workaround to submit multiple items
+                                        string lineToSend = "";
+                                        lineToSend = lineClean.Replace(itemName, String.Format(@"""{0}""", item.Trim()));
+                                        if (match.Groups[1].ToString() == "")
+                                        {
+                                            lineToSend = "startbids " + lineToSend.TrimStart();
+                                        }
+                                        lineToSend = ".dkp " + lineToSend;
+                                        WHCaller.SendHook(lineToSend.Trim());
+
+
+
+
+
+                                        // REMOVE SECTION ABOVE AFTER MULTIITEM IS IMPLEMENTED IN DISCIPLE BOT
+                                    }
                                 }
                                 lineClean = lineClean.Replace(itemName, multiItemCombined.Trim());
                             }
                             else
+                            { // TEMP, REMOVE AFTER MULTIITEM IS IMPLEMENTED IN DISCIPLE BOT
                                 lineClean = lineClean.Replace(itemName, String.Format(@"""" + "{0}" + @"""", itemName));
-                            if (match.Groups[1].ToString() == "")
-                            {
-                                lineClean = "startbids " + lineClean.TrimStart();
-                            }
-                            lineClean = ".dkp " + lineClean;
-                            WHCaller.SendHook(lineClean.Trim());
+                                if (match.Groups[1].ToString() == "")
+                                {
+                                    lineClean = "startbids " + lineClean.TrimStart();
+                                }
+                                lineClean = ".dkp " + lineClean;
+                                WHCaller.SendHook(lineClean.Trim());
+                            } // TEMP, REMOVE AFTER MULTIITEM IS IMPLEMENTED IN DISCIPLE BOT
                         }
                     }
                     //update the last max offset
